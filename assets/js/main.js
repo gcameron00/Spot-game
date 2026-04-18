@@ -9,19 +9,30 @@ const COLOR_HEX = {
   pink:   '#ec4899',
 };
 
-// Level 1: 5x5 grid — all 25 cells must be filled to win
-// Layout:
-//   R  .  .  .  .
-//   .  .  B  R  .
-//   .  .  .  .  B
-//   G  .  .  .  G
-//   Y  .  .  .  Y
-//
-// Solution (fills all 25 cells):
+// Level 1: 5×5 — 4 colours, fills all 25 cells
+// Layout:  R . . . .  /  . . B R .  /  . . . . B  /  G . . . G  /  Y . . . Y
+// Solution:
 //   Red:    (0,0)→(1,0)→(2,0)→(3,0)→(4,0)→(4,1)→(3,1)
 //   Blue:   (2,1)→(1,1)→(0,1)→(0,2)→(1,2)→(2,2)→(3,2)→(4,2)
 //   Green:  (4,3)→(3,3)→(2,3)→(1,3)→(0,3)
 //   Yellow: (0,4)→(1,4)→(2,4)→(3,4)→(4,4)
+
+// Level 2: 5×5 — harder routing, fills all 25 cells
+// Layout:  . . R B .  /  . G . . .  /  . Y . . .  /  . . . G .  /  R . Y B .
+// Solution:
+//   Red:    (0,4)→(0,3)→(0,2)→(0,1)→(0,0)→(1,0)→(2,0)
+//   Blue:   (3,0)→(4,0)→(4,1)→(4,2)→(4,3)→(4,4)→(3,4)
+//   Green:  (1,1)→(2,1)→(3,1)→(3,2)→(3,3)
+//   Yellow: (1,2)→(2,2)→(2,3)→(1,3)→(1,4)→(2,4)
+
+// Level 3: 6×6 — larger grid, fills all 36 cells
+// Layout:  . . . . . R  /  . . . . . G  /  . . . . G B  /  R Y . . . .  /  Y . . . . .  /  B . . . . .
+// Solution:
+//   Red:    (5,0)→(4,0)→(3,0)→(2,0)→(1,0)→(0,0)→(0,1)→(0,2)→(0,3)
+//   Blue:   (0,5)→(1,5)→(2,5)→(3,5)→(4,5)→(5,5)→(5,4)→(5,3)→(5,2)
+//   Green:  (5,1)→(4,1)→(3,1)→(2,1)→(1,1)→(1,2)→(2,2)→(3,2)→(4,2)
+//   Yellow: (1,3)→(2,3)→(3,3)→(4,3)→(4,4)→(3,4)→(2,4)→(1,4)→(0,4)
+
 const LEVELS = [
   {
     size: 5,
@@ -34,6 +45,32 @@ const LEVELS = [
       { id: 'green',  x: 0, y: 3 },
       { id: 'yellow', x: 0, y: 4 },
       { id: 'yellow', x: 4, y: 4 },
+    ],
+  },
+  {
+    size: 5,
+    dots: [
+      { id: 'red',    x: 2, y: 0 },
+      { id: 'red',    x: 0, y: 4 },
+      { id: 'blue',   x: 3, y: 0 },
+      { id: 'blue',   x: 3, y: 4 },
+      { id: 'green',  x: 1, y: 1 },
+      { id: 'green',  x: 3, y: 3 },
+      { id: 'yellow', x: 1, y: 2 },
+      { id: 'yellow', x: 2, y: 4 },
+    ],
+  },
+  {
+    size: 6,
+    dots: [
+      { id: 'red',    x: 5, y: 0 },
+      { id: 'red',    x: 0, y: 3 },
+      { id: 'blue',   x: 0, y: 5 },
+      { id: 'blue',   x: 5, y: 2 },
+      { id: 'green',  x: 5, y: 1 },
+      { id: 'green',  x: 4, y: 2 },
+      { id: 'yellow', x: 1, y: 3 },
+      { id: 'yellow', x: 0, y: 4 },
     ],
   },
 ];
@@ -241,8 +278,12 @@ function handleEnd() {
 function checkWin() {
   if (!colorIds().every(id => isComplete(id))) return;
   const covered = Object.values(paths).reduce((n, p) => n + p.length, 0);
-  if (covered === totalCells()) {
-    document.getElementById('message').textContent = 'Solved!';
+  if (covered !== totalCells()) return;
+
+  document.getElementById('message').textContent = 'Solved!';
+  const next = levelIdx + 1;
+  if (next < LEVELS.length) {
+    setTimeout(() => loadLevel(next), 1200);
   }
 }
 
