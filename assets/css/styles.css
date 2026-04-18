@@ -6,8 +6,8 @@
 
 body {
   font-family: system-ui, sans-serif;
-  background: #f8fafc;
-  color: #1e293b;
+  background: #1a1a1a;
+  color: #e2e8f0;
   min-height: 100dvh;
   display: flex;
   align-items: center;
@@ -26,7 +26,7 @@ h1 {
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #0f172a;
+  color: #f1f5f9;
 }
 
 #level-label {
@@ -40,7 +40,7 @@ h1 {
 #canvas-wrap {
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
 
 #game-canvas {

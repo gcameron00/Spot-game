@@ -76,11 +76,11 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Background
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#3a3a3a';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Grid lines
-  ctx.strokeStyle = '#e2e8f0';
+  ctx.strokeStyle = '#505050';
   ctx.lineWidth = 1;
   for (let i = 0; i <= n; i++) {
     ctx.beginPath();
@@ -121,7 +121,7 @@ function render() {
     ctx.fillStyle = COLOR_HEX[dot.id];
     ctx.fill();
 
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = '#3a3a3a';
     ctx.lineWidth = 3;
     ctx.stroke();
   }
