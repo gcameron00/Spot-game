@@ -4,7 +4,7 @@ A browser-based puzzle game. Connect matching coloured dots on a grid without le
 
 ## How it works
 
-Each level presents a grid with pairs of coloured dots. The player draws a path from one dot to its matching partner for every colour. Paths must not cross. When all pairs are connected, the level is solved and play advances automatically.
+Each level presents a grid with pairs of coloured dots. The player draws a path from one dot to its matching partner for every colour. Paths must not cross. Every cell on the board must be covered — a level is only solved when all pairs are connected **and** no empty cells remain. Play then advances automatically.
 
 ## Current state
 
@@ -16,7 +16,8 @@ Each level presents a grid with pairs of coloured dots. The player draws a path 
 ## Planned
 
 - 10 hardcoded levels, increasing in difficulty
-- Grid sizes grow as levels progress (5×5 → 7×7 → 9×9)
+- Grid sizes grow as levels progress (5×5 → 9×9)
+- Levels with holes (punched-out cells) and non-rectangular shapes from level 5 onward
 - Auto-advance on solve
 - Level rotation as a cheap way to generate visual variety from a single layout
 

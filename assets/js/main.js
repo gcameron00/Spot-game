@@ -9,28 +9,31 @@ const COLOR_HEX = {
   pink:   '#ec4899',
 };
 
-// Level 1: 5x5 grid
+// Level 1: 5x5 grid — all 25 cells must be filled to win
 // Layout:
-//   R B . . .
-//   . . . . .
-//   G . . . B
-//   . . . . .
-//   . . G . R
+//   R  .  .  .  .
+//   .  .  B  R  .
+//   .  .  .  .  B
+//   G  .  .  .  G
+//   Y  .  .  .  Y
 //
-// Solution:
-//   Red:   (0,0)→(0,1)→(1,1)→(2,1)→(3,1)→(3,2)→(3,3)→(3,4)→(4,4)
-//   Blue:  (1,0)→(2,0)→(3,0)→(4,0)→(4,1)→(4,2)
-//   Green: (0,2)→(0,3)→(0,4)→(1,4)→(2,4)
+// Solution (fills all 25 cells):
+//   Red:    (0,0)→(1,0)→(2,0)→(3,0)→(4,0)→(4,1)→(3,1)
+//   Blue:   (2,1)→(1,1)→(0,1)→(0,2)→(1,2)→(2,2)→(3,2)→(4,2)
+//   Green:  (4,3)→(3,3)→(2,3)→(1,3)→(0,3)
+//   Yellow: (0,4)→(1,4)→(2,4)→(3,4)→(4,4)
 const LEVELS = [
   {
     size: 5,
     dots: [
-      { id: 'red',   x: 0, y: 0 },
-      { id: 'red',   x: 4, y: 4 },
-      { id: 'blue',  x: 1, y: 0 },
-      { id: 'blue',  x: 4, y: 2 },
-      { id: 'green', x: 0, y: 2 },
-      { id: 'green', x: 2, y: 4 },
+      { id: 'red',    x: 0, y: 0 },
+      { id: 'red',    x: 3, y: 1 },
+      { id: 'blue',   x: 2, y: 1 },
+      { id: 'blue',   x: 4, y: 2 },
+      { id: 'green',  x: 4, y: 3 },
+      { id: 'green',  x: 0, y: 3 },
+      { id: 'yellow', x: 0, y: 4 },
+      { id: 'yellow', x: 4, y: 4 },
     ],
   },
 ];
@@ -42,10 +45,30 @@ let canvas, ctx;
 
 function lvl() { return LEVELS[levelIdx]; }
 
+function gridW(level) { return level.width  || level.size; }
+function gridH(level) { return level.height || level.size; }
+
+// A cell is valid (playable) unless listed in level.holes
+function isValidCell(x, y) {
+  const level = lvl();
+  if (x < 0 || x >= gridW(level) || y < 0 || y >= gridH(level)) return false;
+  if (!level.holes) return true;
+  return !level.holes.some(h => h.x === x && h.y === y);
+}
+
+// Total number of playable cells in the level
+function totalCells() {
+  const level = lvl();
+  const all = gridW(level) * gridH(level);
+  return all - (level.holes ? level.holes.length : 0);
+}
+
 function cellSize() {
   const padding = 48;
+  const level = lvl();
+  const maxDim = Math.max(gridW(level), gridH(level));
   const available = Math.min(window.innerWidth - padding, window.innerHeight - 180);
-  return Math.max(48, Math.floor(available / lvl().size));
+  return Math.max(48, Math.floor(available / maxDim));
 }
 
 function loadLevel(idx) {
@@ -63,34 +86,36 @@ function colorIds() {
 
 function resizeCanvas() {
   const cs = cellSize();
-  const n = lvl().size;
-  canvas.width = cs * n;
-  canvas.height = cs * n;
+  canvas.width  = cs * gridW(lvl());
+  canvas.height = cs * gridH(lvl());
   render();
 }
 
 function render() {
   const cs = cellSize();
-  const n = lvl().size;
+  const gw = gridW(lvl());
+  const gh = gridH(lvl());
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Background
-  ctx.fillStyle = '#3a3a3a';
+  // Dark page colour shows through holes
+  ctx.fillStyle = '#1a1a1a';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Grid lines
+  // Draw valid cells in board colour
+  ctx.fillStyle = '#3a3a3a';
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      if (isValidCell(x, y)) ctx.fillRect(x * cs, y * cs, cs, cs);
+    }
+  }
+
+  // Grid lines on valid cells only
   ctx.strokeStyle = '#505050';
   ctx.lineWidth = 1;
-  for (let i = 0; i <= n; i++) {
-    ctx.beginPath();
-    ctx.moveTo(i * cs + 0.5, 0);
-    ctx.lineTo(i * cs + 0.5, canvas.height);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, i * cs + 0.5);
-    ctx.lineTo(canvas.width, i * cs + 0.5);
-    ctx.stroke();
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      if (!isValidCell(x, y)) continue;
+      ctx.strokeRect(x * cs + 0.5, y * cs + 0.5, cs - 1, cs - 1);
+    }
   }
 
   // Paths
@@ -132,8 +157,7 @@ function getCell(clientX, clientY) {
   const cs = cellSize();
   const x = Math.floor((clientX - rect.left) / cs);
   const y = Math.floor((clientY - rect.top) / cs);
-  const n = lvl().size;
-  if (x < 0 || x >= n || y < 0 || y >= n) return null;
+  if (!isValidCell(x, y)) return null;
   return { x, y };
 }
 
@@ -215,7 +239,9 @@ function handleEnd() {
 }
 
 function checkWin() {
-  if (colorIds().every(id => isComplete(id))) {
+  if (!colorIds().every(id => isComplete(id))) return;
+  const covered = Object.values(paths).reduce((n, p) => n + p.length, 0);
+  if (covered === totalCells()) {
     document.getElementById('message').textContent = 'Solved!';
   }
 }
