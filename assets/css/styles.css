@@ -1,30 +1,58 @@
-:root {
-  color-scheme: light dark;
-  --color-bg: #ffffff;
-  --color-text: #1e293b;
-  --color-muted: #64748b;
-  --color-accent: #2563eb;
-  --color-border: #e2e8f0;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #0f172a;
-    --color-text: #e2e8f0;
-    --color-muted: #94a3b8;
-    --color-accent: #60a5fa;
-    --color-border: #1e293b;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   font-family: system-ui, sans-serif;
-  margin: 2rem;
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background: #f8fafc;
+  color: #1e293b;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-a {
-  text-decoration: none;
-  color: var(--color-accent);
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+#level-label {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+#canvas-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+#game-canvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+#message {
+  font-weight: 700;
+  font-size: 1rem;
+  min-height: 1.5rem;
+  color: #22c55e;
+  letter-spacing: 0.01em;
 }

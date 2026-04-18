@@ -3,13 +3,64 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <title>About</title>
+    <title>About — Spot</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/assets/css/styles.css">
+    <style>
+      #app {
+        max-width: 480px;
+        align-items: flex-start;
+      }
+      h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #0f172a;
+      }
+      p, li {
+        color: #475569;
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+      ul {
+        padding-left: 1.25rem;
+      }
+      li {
+        margin-bottom: 0.35rem;
+      }
+      a {
+        color: #3b82f6;
+        text-decoration: none;
+      }
+    </style>
   </head>
   <body>
-    <h1>About</h1>
-    <p><a href="/">Back home</a></p>
+    <div id="app">
+      <h1>Spot</h1>
+
+      <h2>How to play</h2>
+      <ul>
+        <li>Each puzzle shows a grid with pairs of coloured dots.</li>
+        <li>Draw a path from each dot to its matching colour.</li>
+        <li>Paths cannot cross each other.</li>
+        <li>Connect all pairs to solve the level.</li>
+      </ul>
+
+      <h2>Controls</h2>
+      <ul>
+        <li><strong>Draw</strong> — click or tap a dot and drag.</li>
+        <li><strong>Retract</strong> — drag back along your own path to undo.</li>
+        <li><strong>Restart a colour</strong> — start drawing from either of its dots again.</li>
+      </ul>
+
+      <h2>Tips</h2>
+      <ul>
+        <li>Think about which paths have the fewest possible routes first.</li>
+        <li>Constrained dots (near corners or edges) are a good place to start.</li>
+      </ul>
+
+      <p style="margin-top: 2rem;"><a href="/">← Play</a></p>
+    </div>
   </body>
 </html>
