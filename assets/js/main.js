@@ -60,6 +60,39 @@ const COLOR_HEX = {
 //   Green:  (0,3)→(1,3)→(2,3)→(2,4)→(1,4)→(0,4)→(0,5)→(0,6)→(1,6)→(2,6)→(3,6)
 //   Yellow: (1,5)→(2,5)→(3,5)→(4,5)→(4,6)→(5,6)→(6,6)→(6,5)→(6,4)→(5,4)→(5,5)
 
+// Level 7: 7×7 square — 5 colours, fills all 49 cells
+// Solution (snake, split at segment boundaries):
+//   Red:    (0,0)→…→(6,0)→(6,1)→(5,1)→(4,1)  [10]
+//   Blue:   (3,1)→(2,1)→(1,1)→(0,1)→(0,2)→…→(5,2)  [10]
+//   Orange: (6,2)→(6,3)→(5,3)→(4,3)→(3,3)→(2,3)→(1,3)→(0,3)→(0,4)  [9]
+//   Green:  (1,4)→(2,4)→…→(6,4)→(6,5)→(5,5)→(4,5)→(3,5)  [10]
+//   Yellow: (2,5)→(1,5)→(0,5)→(0,6)→(1,6)→…→(6,6)  [10]
+
+// Level 8: 8×8 square — 5 colours, fills all 64 cells
+// Solution (snake):
+//   Red:    (0,0)→…→(8,0)→(7,1)→…→(3,1)  [13]  (note: 8×8 uses indices 0–7)
+//   Blue:   (2,1)→(1,1)→(0,1)→(0,2)→…→(7,2)→(7,3)→(6,3)  [13]
+//   Orange: (5,3)→(4,3)→(3,3)→(2,3)→(1,3)→(0,3)→(0,4)→…→(6,4)  [13]
+//   Green:  (7,4)→(7,5)→(6,5)→…→(0,5)→(0,6)→(1,6)→…→(3,6)  [13]
+//   Yellow: (4,6)→(5,6)→(6,6)→(7,6)→(7,7)→(6,7)→…→(0,7)  [12]
+
+// Level 9: 8×8 L-shape — top-right 3×4 removed (52 valid cells), 5 colours
+// Holes: x≥5, y≤3
+// Solution:
+//   Red:    (0,0)→…→(4,0)→(4,1)→…→(0,1)→(0,2)  [11]
+//   Blue:   (1,2)→…→(4,2)→(4,3)→…→(0,3)→(0,4)→(1,4)  [11]
+//   Orange: (2,4)→…→(7,4)→(7,5)→…→(4,5)  [10]
+//   Green:  (3,5)→(2,5)→(1,5)→(0,5)→(0,6)→…→(5,6)  [10]
+//   Yellow: (6,6)→(7,6)→(7,7)→(6,7)→…→(0,7)  [10]
+
+// Level 10: 9×9 square — 5 colours, fills all 81 cells (hardest)
+// Solution (snake, 17+17+17+15+15 split):
+//   Red:    (0,0)→…→(8,0)→(8,1)→…→(1,1)  [17]
+//   Blue:   (0,1)→(0,2)→…→(8,2)→(8,3)→…→(2,3)  [17]
+//   Orange: (1,3)→(0,3)→(0,4)→…→(8,4)→(8,5)→…→(3,5)  [17]
+//   Green:  (2,5)→(1,5)→(0,5)→(0,6)→…→(8,6)→(8,7)→…→(6,7)  [15]
+//   Yellow: (5,7)→(4,7)→…→(0,7)→(0,8)→…→(8,8)  [15]
+
 const LEVELS = [
   {
     size: 5,
@@ -153,6 +186,76 @@ const LEVELS = [
       { id: 'green',  x: 3, y: 6 },
       { id: 'yellow', x: 1, y: 5 },
       { id: 'yellow', x: 5, y: 5 },
+    ],
+  },
+  // Level 7 — 7×7 square, 5 colours
+  {
+    size: 7,
+    dots: [
+      { id: 'red',    x: 0, y: 0 },
+      { id: 'red',    x: 4, y: 1 },
+      { id: 'blue',   x: 3, y: 1 },
+      { id: 'blue',   x: 5, y: 2 },
+      { id: 'orange', x: 6, y: 2 },
+      { id: 'orange', x: 0, y: 4 },
+      { id: 'green',  x: 1, y: 4 },
+      { id: 'green',  x: 3, y: 5 },
+      { id: 'yellow', x: 2, y: 5 },
+      { id: 'yellow', x: 6, y: 6 },
+    ],
+  },
+  // Level 8 — 8×8 square, 5 colours
+  {
+    size: 8,
+    dots: [
+      { id: 'red',    x: 0, y: 0 },
+      { id: 'red',    x: 3, y: 1 },
+      { id: 'blue',   x: 2, y: 1 },
+      { id: 'blue',   x: 6, y: 3 },
+      { id: 'orange', x: 5, y: 3 },
+      { id: 'orange', x: 6, y: 4 },
+      { id: 'green',  x: 7, y: 4 },
+      { id: 'green',  x: 3, y: 6 },
+      { id: 'yellow', x: 4, y: 6 },
+      { id: 'yellow', x: 0, y: 7 },
+    ],
+  },
+  // Level 9 — 8×8 L-shape, top-right 3×4 cut (52 cells), 5 colours
+  {
+    size: 8,
+    holes: [
+      {x:5,y:0},{x:6,y:0},{x:7,y:0},
+      {x:5,y:1},{x:6,y:1},{x:7,y:1},
+      {x:5,y:2},{x:6,y:2},{x:7,y:2},
+      {x:5,y:3},{x:6,y:3},{x:7,y:3},
+    ],
+    dots: [
+      { id: 'red',    x: 0, y: 0 },
+      { id: 'red',    x: 0, y: 2 },
+      { id: 'blue',   x: 1, y: 2 },
+      { id: 'blue',   x: 1, y: 4 },
+      { id: 'orange', x: 2, y: 4 },
+      { id: 'orange', x: 4, y: 5 },
+      { id: 'green',  x: 3, y: 5 },
+      { id: 'green',  x: 5, y: 6 },
+      { id: 'yellow', x: 6, y: 6 },
+      { id: 'yellow', x: 0, y: 7 },
+    ],
+  },
+  // Level 10 — 9×9 square, 5 colours (hardest)
+  {
+    size: 9,
+    dots: [
+      { id: 'red',    x: 0, y: 0 },
+      { id: 'red',    x: 1, y: 1 },
+      { id: 'blue',   x: 0, y: 1 },
+      { id: 'blue',   x: 2, y: 3 },
+      { id: 'orange', x: 1, y: 3 },
+      { id: 'orange', x: 3, y: 5 },
+      { id: 'green',  x: 2, y: 5 },
+      { id: 'green',  x: 6, y: 7 },
+      { id: 'yellow', x: 5, y: 7 },
+      { id: 'yellow', x: 8, y: 8 },
     ],
   },
 ];
