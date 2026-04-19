@@ -265,6 +265,40 @@ let paths = {};
 let dragging = null;
 let canvas, ctx;
 
+// --- Progress ---
+function getHighestSolved() {
+  const v = localStorage.getItem('spotHighestSolved');
+  return v === null ? -1 : parseInt(v, 10);
+}
+
+function markSolved(idx) {
+  if (idx > getHighestSolved()) localStorage.setItem('spotHighestSolved', String(idx));
+}
+
+// --- Level picker ---
+function buildPicker() {
+  const picker = document.getElementById('level-picker');
+  const highest = getHighestSolved();
+  picker.innerHTML = '';
+  LEVELS.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = i + 1;
+    if (i === levelIdx) {
+      btn.classList.add('unlocked', 'current');
+    } else if (i <= highest + 1) {
+      btn.classList.add('unlocked');
+      btn.addEventListener('click', () => { closePicker(); loadLevel(i); });
+    }
+    picker.appendChild(btn);
+  });
+}
+
+function openPicker()  { buildPicker(); document.getElementById('level-picker').classList.add('open'); }
+function closePicker() { document.getElementById('level-picker').classList.remove('open'); }
+function togglePicker() {
+  document.getElementById('level-picker').classList.contains('open') ? closePicker() : openPicker();
+}
+
 function lvl() { return LEVELS[levelIdx]; }
 
 function gridW(level) { return level.width  || level.size; }
@@ -296,7 +330,9 @@ function cellSize() {
 function loadLevel(idx) {
   levelIdx = idx;
   paths = {};
+  dragging = null;
   for (const id of colorIds()) paths[id] = [];
+  closePicker();
   document.getElementById('level-label').textContent = `Level ${idx + 1}`;
   document.getElementById('message').textContent = '';
   resizeCanvas();
@@ -465,10 +501,14 @@ function checkWin() {
   const covered = Object.values(paths).reduce((n, p) => n + p.length, 0);
   if (covered !== totalCells()) return;
 
+  const isNewLevel = levelIdx > getHighestSolved();
+  markSolved(levelIdx);
   document.getElementById('message').textContent = 'Solved!';
-  const next = levelIdx + 1;
-  if (next < LEVELS.length) {
-    setTimeout(() => loadLevel(next), 1200);
+
+  // Only auto-advance when clearing a level for the first time
+  if (isNewLevel) {
+    const next = levelIdx + 1;
+    if (next < LEVELS.length) setTimeout(() => loadLevel(next), 1200);
   }
 }
 
@@ -487,5 +527,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', resizeCanvas);
 
-  loadLevel(0);
+  // Level picker toggle
+  document.getElementById('level-label').addEventListener('click', togglePicker);
+  document.addEventListener('click', e => {
+    if (!document.getElementById('level-wrap').contains(e.target)) closePicker();
+  });
+
+  // Resume at first unsolved level (or last if all done)
+  const highest = getHighestSolved();
+  const start = Math.min(highest + 1, LEVELS.length - 1);
+  loadLevel(Math.max(start, 0));
 });
